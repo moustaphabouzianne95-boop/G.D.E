@@ -7,11 +7,15 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: #f0f4f8; color: #1e293b; min-height: 100vh; }
-        header { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-        header h1 { font-size: 1.4rem; display: inline-block; }
-        header nav { float: right; margin-top: .3rem; }
-        header nav a { color: #e0e7ff; text-decoration: none; margin-left: 1.2rem; font-weight: 500; }
+        header { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,.15); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; }
+        header h1 { font-size: 1.4rem; }
+        header nav { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem; }
+        header nav a { color: #e0e7ff; text-decoration: none; font-weight: 500; }
         header nav a:hover { color: #fff; text-decoration: underline; }
+        header .utilisateur { color: #c7d2fe; font-size: .85rem; }
+        header form.deconnexion { display: inline; margin: 0; }
+        header form.deconnexion button { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.4); color: #fff; font-weight: 600; cursor: pointer; font-size: .9rem; padding: .35rem .8rem; border-radius: 8px; font-family: inherit; white-space: nowrap; }
+        header form.deconnexion button:hover { background: rgba(255,255,255,.3); }
         .conteneur { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
         .carte { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
         .messages { margin-bottom: 1rem; }
