@@ -1,0 +1,15 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Suppression{% endblock %}
+{% block contenu %}
+<div class="carte" style="max-width: 550px;">
+    <h2>⚠️ Confirmer la suppression</h2>
+    <p style="margin-bottom:1.2rem;">Voulez-vous vraiment supprimer <strong>{{ object }}</strong> ?<br><em style="color:#dc2626;">Cette action est irréversible.</em></p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions-form">
+            <button type="submit" class="btn btn-danger">🗑️ Oui, supprimer</button>
+            <a href="javascript:history.back()" class="btn btn-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

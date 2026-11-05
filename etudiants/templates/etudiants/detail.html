@@ -1,0 +1,21 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Profil de {{ etudiant.prenom }} {{ etudiant.nom }}{% endblock %}
+{% block contenu %}
+<div class="carte detail">
+    <h2>👤 Profil de {{ etudiant.prenom }} {{ etudiant.nom }}</h2>
+    <dl>
+        <dt>Numéro étudiant</dt><dd>{{ etudiant.numero_etudiant }}</dd>
+        <dt>Nom</dt><dd>{{ etudiant.nom }}</dd>
+        <dt>Prénom</dt><dd>{{ etudiant.prenom }}</dd>
+        <dt>Adresse e-mail</dt><dd><a href="mailto:{{ etudiant.email }}">{{ etudiant.email }}</a></dd>
+        <dt>Date de naissance</dt><dd>{{ etudiant.date_naissance|date:"d/m/Y" }}</dd>
+        <dt>Niveau d'études</dt><dd><span class="badge">{{ etudiant.get_niveau_display }}</span></dd>
+        <dt>Inscrit le</dt><dd>{{ etudiant.date_inscription|date:"d/m/Y à H:i" }}</dd>
+    </dl>
+    <div class="actions-form">
+        <a href="{% url 'etudiants:modifier' etudiant.pk %}" class="btn btn-principal">✏️ Modifier</a>
+        <a href="{% url 'etudiants:supprimer' etudiant.pk %}" class="btn btn-danger">🗑️ Supprimer</a>
+        <a href="{% url 'etudiants:liste' %}" class="btn btn-secondaire">← Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}

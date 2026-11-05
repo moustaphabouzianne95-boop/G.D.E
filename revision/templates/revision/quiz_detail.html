@@ -1,0 +1,40 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}{{ quiz.titre }}{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>📝 {{ quiz.titre }}</h2>
+    <p><span class="badge">{{ quiz.thematique.nom }}</span>
+       {% if quiz.est_public %}<span class="badge">🌍 Public — partagé avec tous</span>{% else %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔒 Privé — visible par vous seul</span>{% endif %}
+       <span style="color:#64748b; font-size:.85rem;">par {{ quiz.createur|default:"—" }} · créé le {{ quiz.date_creation|date:"d/m/Y" }}</span></p>
+    <p style="margin-top:.6rem;">{{ quiz.description|default:"Aucune description." }}</p>
+    <p style="margin-top:.8rem;"><strong>{{ quiz.nb_questions }}</strong> question{{ quiz.nb_questions|pluralize }} ·
+       {% if nb_tentatives > 0 %}vos tentatives : {{ nb_tentatives }} · meilleur score : <strong>{{ meilleur_score }}/{{ quiz.nb_questions }}</strong>{% else %}pas encore tenté{% endif %}</p>
+    <div class="actions-form">
+        {% if quiz.nb_questions > 0 %}
+        <a href="{% url 'revision:quiz_passer' quiz.pk %}" class="btn btn-principal">▶️ Passer le quiz</a>
+        {% endif %}
+        {% if est_createur %}
+        <a href="{% url 'revision:question_ajouter' quiz.pk %}" class="btn btn-principal">➕ Ajouter une question</a>
+        <a href="{% url 'revision:quiz_supprimer' quiz.pk %}" class="btn btn-danger">🗑️ Supprimer</a>
+        {% endif %}
+        <a href="{% url 'revision:quiz_liste' %}" class="btn btn-secondaire">← Tous les quiz</a>
+    </div>
+</div>
+{% if est_createur and quiz.questions.all %}
+<div class="carte">
+    <h2>❓ Questions du quiz</h2>
+    <table>
+        <thead><tr><th>#</th><th>Énoncé</th><th>Bonne réponse</th></tr></thead>
+        <tbody>
+        {% for question in quiz.questions.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ question.enonce }}</td>
+                <td><strong style="color:#065f46;">{{ question.bonne_reponse.texte }}</strong></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

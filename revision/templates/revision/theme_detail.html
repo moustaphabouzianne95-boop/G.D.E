@@ -1,0 +1,49 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}{{ thematique.nom }}{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>🏷️ {{ thematique.nom }}</h2>
+    <p>{{ thematique.description|default:"Aucune description." }}</p>
+    <div class="actions-form">
+        <a href="{% url 'revision:quiz_creer' %}" class="btn btn-principal">📝 Créer un quiz</a>
+        <a href="{% url 'revision:flashcard_creer' %}" class="btn btn-principal">🃏 Créer une flashcard</a>
+        <a href="{% url 'revision:themes' %}" class="btn btn-secondaire">← Toutes les thématiques</a>
+    </div>
+</div>
+<div class="carte">
+    <h2>📝 Quiz de cette thématique</h2>
+    {% if quiz_visibles %}
+    <table>
+        <thead><tr><th>Titre</th><th>Questions</th><th>Visibilité</th><th></th></tr></thead>
+        <tbody>
+        {% for q in quiz_visibles %}
+            <tr>
+                <td><strong>{{ q.titre }}</strong> <span style="color:#64748b; font-size:.8rem;">par {{ q.createur }}</span></td>
+                <td>{{ q.nb_questions }}</td>
+                <td>{% if q.est_public %}<span class="badge">🌍 Public</span>{% else %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔒 Privé</span>{% endif %}</td>
+                <td><a href="{% url 'revision:quiz_detail' q.pk %}" class="btn btn-secondaire btn-petit">Ouvrir</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}<p class="vide">Aucun quiz visible ici.</p>{% endif %}
+</div>
+<div class="carte">
+    <h2>🃏 Flashcards de cette thématique</h2>
+    {% if flashcards_visibles %}
+    <table>
+        <thead><tr><th>Recto</th><th>Verso</th><th>Visibilité</th></tr></thead>
+        <tbody>
+        {% for f in flashcards_visibles %}
+            <tr>
+                <td>{{ f.recto }}</td>
+                <td>{{ f.verso|truncatewords:12 }}</td>
+                <td>{% if f.est_publique %}<span class="badge">🌍 Public</span>{% else %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔒 Privé</span>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p style="margin-top:.8rem;"><a href="{% url 'revision:flashcards_reviser' %}?theme={{ thematique.pk }}" class="btn btn-principal">🔄 Mode révision</a></p>
+    {% else %}<p class="vide">Aucune flashcard visible ici.</p>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Rappels de devoirs{% endblock %}
+{% block style_extra %}
+.retard { color: #991b1b; font-weight: 700; }
+{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>🔔 Rappels de rendus de devoirs</h2>
+    <p>Les devoirs non rendus dont l'échéance est dans moins de 24 h (ou déjà dépassée) recevront un e-mail de rappel.</p>
+    <form method="post" style="margin: 1rem 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-principal">✉️ Envoyer les rappels maintenant</button>
+        <span style="color:#64748b; font-size:.85rem; margin-left:.6rem;">{{ nb_a_rappeler }} devoir(s) à rappeler actuellement</span>
+    </form>
+    <p style="color:#64748b; font-size:.82rem;">Astuce : en production, la commande <code>python3 manage.py envoyer_rappels</code> peut être planifiée (cron) toutes les heures. En développement, les e-mails s'affichent dans la console du serveur.</p>
+</div>
+<div class="carte">
+    <h2>📄 Devoirs non rendus</h2>
+    {% if devoirs %}
+    <table>
+        <thead><tr><th>Devoir</th><th>Matière</th><th>Échéance</th><th>Statut</th><th>Dernier rappel</th></tr></thead>
+        <tbody>
+        {% for d in devoirs %}
+            <tr {% if d.en_retard %}style="background:#fef2f2;"{% endif %}>
+                <td><strong>{{ d.titre }}</strong></td>
+                <td>{{ d.matiere|default:"—" }}</td>
+                <td>{{ d.date_echeance|date:"d/m/Y H:i" }}</td>
+                <td>{% if d.en_retard %}<span class="retard">⚠️ En retard</span>{% else %}<span class="badge">⏳ À venir</span>{% endif %}</td>
+                <td>{{ d.dernier_rappel|date:"d/m/Y H:i"|default:"jamais" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vide">Tous les devoirs sont rendus. Bravo ! 🎉</p>
+    {% endif %}
+</div>
+{% endblock %}

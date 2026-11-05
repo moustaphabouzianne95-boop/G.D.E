@@ -1,0 +1,52 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Mes devoirs{% endblock %}
+{% block style_extra %}
+.retard { color: #991b1b; font-weight: 700; }
+{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>📄 Mes devoirs à rendre</h2>
+    <form method="get" style="display:flex; gap:.8rem; align-items:center; flex-wrap:wrap;">
+        <select name="filtre">
+            <option value="" {% if not filtre %}selected{% endif %}>Tous</option>
+            <option value="a_faire" {% if filtre == "a_faire" %}selected{% endif %}>À faire uniquement</option>
+        </select>
+        <button type="submit" class="btn btn-secondaire">Filtrer</button>
+        <a href="{% url 'planning:devoir_creer' %}" class="btn btn-principal">+ Nouveau devoir</a>
+        <a href="{% url 'planning:rappels' %}" class="btn btn-secondaire">🔔 Rappels e-mail</a>
+        {% if nb_en_retard %}<span class="retard">⚠️ {{ nb_en_retard }} en retard</span>{% endif %}
+    </form>
+</div>
+<div class="carte">
+    {% if devoirs %}
+    <table>
+        <thead><tr><th>Devoir</th><th>Matière</th><th>Échéance</th><th>Statut</th><th>Rendu le</th><th></th></tr></thead>
+        <tbody>
+        {% for d in devoirs %}
+            <tr {% if d.en_retard %}style="background:#fef2f2;"{% endif %}>
+                <td><strong>{{ d.titre }}</strong></td>
+                <td>{{ d.matiere|default:"—" }}</td>
+                <td>{{ d.date_echeance|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if d.rendu %}<span class="badge" style="background:#d1fae5;color:#065f46;">✅ Rendu</span>
+                    {% elif d.en_retard %}<span class="retard">⚠️ En retard</span>
+                    {% else %}<span class="badge">⏳ À rendre</span>{% endif %}
+                </td>
+                <td>{{ d.date_rendu|date:"d/m/Y H:i"|default:"—" }}</td>
+                <td>
+                    <form method="post" action="{% url 'planning:devoir_toggle' d.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondaire btn-petit">{% if d.rendu %}↩️ Marquer non rendu{% else %}✅ Marquer rendu{% endif %}</button>
+                    </form>
+                    <a href="{% url 'planning:devoir_modifier' d.pk %}" class="btn btn-principal btn-petit">Modifier</a>
+                    <a href="{% url 'planning:devoir_supprimer' d.pk %}" class="btn btn-danger btn-petit">Supprimer</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vide">Aucun devoir enregistré. <a href="{% url 'planning:devoir_creer' %}">Ajoutez un rendu</a> ! 📄</p>
+    {% endif %}
+</div>
+{% endblock %}

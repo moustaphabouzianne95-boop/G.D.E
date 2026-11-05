@@ -1,0 +1,30 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Résultat{% endblock %}
+{% block style_extra %}
+.note { font-size: 2.2rem; font-weight: 800; color: #312e81; }
+.juste { color: #065f46; font-weight: 600; }
+.faux { color: #991b1b; font-weight: 600; }
+.recap { margin-top: .4rem; font-size: .9rem; }
+{% endblock %}
+{% block contenu %}
+<div class="carte" style="text-align: center;">
+    <h2>🏆 Résultat du quiz « {{ tentative.quiz.titre }} »</h2>
+    <p class="note">{{ tentative.score }} / {{ tentative.nb_questions }} ({{ tentative.pourcentage }} %)</p>
+    <p style="margin-top:.6rem;">⏱️ Durée : <strong>{{ tentative.duree_formatee }}</strong> · passé le {{ tentative.date|date:"d/m/Y à H:i" }}</p>
+    <div class="actions-form" style="justify-content: center;">
+        <a href="{% url 'revision:quiz_passer' tentative.quiz.pk %}" class="btn btn-principal">🔄 Retenter le quiz</a>
+        <a href="{% url 'revision:mes_scores' %}" class="btn btn-secondaire">📊 Mes scores</a>
+    </div>
+</div>
+<div class="carte">
+    <h2>🔍 Correction détaillée</h2>
+    {% for r in tentative.detail %}
+    <div class="question" style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <p style="font-weight: 600;">{{ forloop.counter }}. {{ r.enonce }}</p>
+        <p class="recap">Votre réponse : {% if r.choisi %}<span class="{% if r.correct %}juste{% else %}faux{% endif %}">{{ r.choisi }}</span>{% else %}<em>aucune réponse</em>{% endif %}</p>
+        {% if not r.correct %}<p class="recap">Bonne réponse : <span class="juste">{{ r.bonne }}</span></p>{% endif %}
+        <p class="recap">{% if r.correct %}✅ Correct{% else %}❌ Incorrect{% endif %}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

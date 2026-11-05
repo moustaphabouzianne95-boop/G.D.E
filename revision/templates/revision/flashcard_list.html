@@ -1,0 +1,47 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Flashcards{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>🃏 Flashcards partagées</h2>
+    <form method="get" style="display:flex; gap:.8rem; align-items:end; flex-wrap:wrap;">
+        <div>
+            <label for="theme">Filtrer par thématique</label>
+            <select name="theme" id="theme">
+                <option value="">Toutes</option>
+                {% for t in thematiques %}
+                <option value="{{ t.pk }}" {% if theme_selectionnee == t.pk|stringformat:"i" %}selected{% endif %}>{{ t.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-principal">Filtrer</button>
+        <a href="{% url 'revision:flashcard_creer' %}" class="btn btn-principal">+ Nouvelle flashcard</a>
+        <a href="{% url 'revision:flashcards_reviser' %}{% if theme_selectionnee %}?theme={{ theme_selectionnee }}{% endif %}" class="btn btn-secondaire">🔄 Mode révision</a>
+    </form>
+</div>
+<div class="carte">
+    {% if flashcards %}
+    <table>
+        <thead><tr><th>Recto</th><th>Verso</th><th>Thématique</th><th>Auteur</th><th>Visibilité</th><th></th></tr></thead>
+        <tbody>
+        {% for f in flashcards %}
+            <tr>
+                <td><strong>{{ f.recto }}</strong></td>
+                <td>{{ f.verso|truncatewords:15 }}</td>
+                <td><span class="badge">{{ f.thematique.nom }}</span></td>
+                <td>{{ f.createur|default:"—" }}</td>
+                <td>{% if f.est_publique %}<span class="badge">🌍 Public</span>{% else %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔒 Privé</span>{% endif %}</td>
+                <td>{% if f.createur == user %}<a href="{% url 'revision:flashcard_supprimer' f.pk %}" class="btn btn-danger btn-petit">Supprimer</a>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if theme_selectionnee %}&theme={{ theme_selectionnee }}{% endif %}">← Précédent</a>{% endif %}
+        <span class="actif">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if theme_selectionnee %}&theme={{ theme_selectionnee }}{% endif %}">Suivant →</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}<p class="vide">Aucune flashcard disponible. Créez-en une ! 🚀</p>{% endif %}
+</div>
+{% endblock %}

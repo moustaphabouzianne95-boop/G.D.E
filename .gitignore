@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Base de données locale (recréée par les migrations)
+db.sqlite3
+test_db.sqlite3
+
+# Divers
+.cache/
+.env
+*.log
+.DS_Store

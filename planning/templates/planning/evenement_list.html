@@ -1,0 +1,35 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Emploi du temps à venir{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>📋 Emploi du temps à venir</h2>
+    <p class="resultats-info">
+        <a href="{% url 'planning:evenement_creer' %}" class="btn btn-principal">+ Nouvel événement</a>
+        <a href="{% url 'planning:calendrier' %}" class="btn btn-secondaire">← Retour au calendrier</a>
+    </p>
+    {% if evenements %}
+    <table>
+        <thead><tr><th>Date</th><th>Horaire</th><th>Titre</th><th>Type</th><th>Matière</th><th>Lieu</th><th>Durée</th><th></th></tr></thead>
+        <tbody>
+        {% for e in evenements %}
+            <tr>
+                <td>{{ e.date|date:"d/m/Y" }}</td>
+                <td>{{ e.heure_debut|time:"H:i" }} – {{ e.heure_fin|time:"H:i" }}</td>
+                <td><strong>{{ e.titre }}</strong></td>
+                <td><span class="badge">{{ e.get_type_display }}</span></td>
+                <td>{{ e.matiere|default:"—" }}</td>
+                <td>{{ e.lieu|default:"—" }}</td>
+                <td>{{ e.duree_heures|floatformat:1 }} h</td>
+                <td>
+                    <a href="{% url 'planning:evenement_modifier' e.pk %}" class="btn btn-principal btn-petit">Modifier</a>
+                    <a href="{% url 'planning:evenement_supprimer' e.pk %}" class="btn btn-danger btn-petit">Supprimer</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vide">Aucun événement à venir. <a href="{% url 'planning:evenement_creer' %}">Planifiez votre premier cours</a> ! 📅</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Quiz disponibles{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>📝 Quiz disponibles</h2>
+    <form method="get" style="display:flex; gap:.8rem; align-items:end; flex-wrap:wrap;">
+        <div>
+            <label for="theme">Filtrer par thématique</label>
+            <select name="theme" id="theme">
+                <option value="">Toutes</option>
+                {% for t in thematiques %}
+                <option value="{{ t.pk }}" {% if theme_selectionnee == t.pk|stringformat:"i" %}selected{% endif %}>{{ t.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-principal">Filtrer</button>
+        <a href="{% url 'revision:quiz_creer' %}" class="btn btn-principal">+ Créer un quiz</a>
+    </form>
+</div>
+<div class="carte">
+    {% if quiz %}
+    <table>
+        <thead><tr><th>Quiz</th><th>Thématique</th><th>Questions</th><th>Auteur</th><th>Visibilité</th><th></th></tr></thead>
+        <tbody>
+        {% for q in quiz %}
+            <tr>
+                <td><strong>{{ q.titre }}</strong></td>
+                <td><span class="badge">{{ q.thematique.nom }}</span></td>
+                <td>{{ q.nb_questions }}</td>
+                <td>{{ q.createur|default:"—" }}</td>
+                <td>{% if q.est_public %}<span class="badge">🌍 Public</span>{% else %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔒 Privé</span>{% endif %}</td>
+                <td>
+                    <a href="{% url 'revision:quiz_detail' q.pk %}" class="btn btn-secondaire btn-petit">Ouvrir</a>
+                    {% if q.nb_questions > 0 %}
+                    <a href="{% url 'revision:quiz_passer' q.pk %}" class="btn btn-principal btn-petit">▶️ Passer</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if theme_selectionnee %}&theme={{ theme_selectionnee }}{% endif %}">← Précédent</a>{% endif %}
+        <span class="actif">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if theme_selectionnee %}&theme={{ theme_selectionnee }}{% endif %}">Suivant →</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}<p class="vide">Aucun quiz disponible. Soyez le premier à en créer un ! 🚀</p>{% endif %}
+</div>
+{% endblock %}

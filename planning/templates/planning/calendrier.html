@@ -1,0 +1,94 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Calendrier — {{ nom_mois }} {{ annee }}{% endblock %}
+{% block style_extra %}
+.calendrier { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.calendrier th { background: #eef2ff; color: #3730a3; padding: .5rem; font-size: .8rem; }
+.calendrier td { border: 1px solid #e2e8f0; vertical-align: top; height: 95px; padding: .35rem; font-size: .8rem; background: #fff; }
+.calendrier td.hors-mois { background: #f8fafc; color: #cbd5e1; }
+.calendrier td.aujourdhui { background: #eef2ff; border: 2px solid #6366f1; }
+.jour-num { font-weight: 700; color: #334155; }
+.ev { display: block; border-radius: 6px; padding: .15rem .4rem; margin-top: .2rem; font-size: .72rem; color: #fff; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-cours { background: #4f46e5; }
+.ev-revision { background: #059669; }
+.ev-examen { background: #dc2626; }
+.ev-autre { background: #64748b; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .8rem; }
+.stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: .8rem; text-align: center; }
+.stat .valeur { font-size: 1.4rem; font-weight: 800; color: #312e81; }
+.stat .label { font-size: .78rem; color: #64748b; }
+.urgence { color: #991b1b; font-weight: 700; }
+{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.6rem;">
+        <h2 style="margin:0;">📅 {{ nom_mois|capfirst }} {{ annee }}</h2>
+        <div>
+            <a href="?annee={{ prec.0 }}&mois={{ prec.1 }}" class="btn btn-secondaire btn-petit">← Mois précédent</a>
+            <a href="{% url 'planning:calendrier' %}" class="btn btn-secondaire btn-petit">Aujourd'hui</a>
+            <a href="?annee={{ suiv.0 }}&mois={{ suiv.1 }}" class="btn btn-secondaire btn-petit">Mois suivant →</a>
+            <a href="{% url 'planning:evenement_creer' %}" class="btn btn-principal btn-petit">+ Événement</a>
+            <a href="{% url 'planning:evenements' %}" class="btn btn-secondaire btn-petit">📋 Emploi du temps</a>
+        </div>
+    </div>
+</div>
+<div class="carte">
+    <table class="calendrier">
+        <thead><tr><th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Sam</th><th>Dim</th></tr></thead>
+        <tbody>
+        {% for semaine in semaines %}
+            <tr>
+                {% for jour in semaine %}
+                <td class="{% if jour == 0 %}hors-mois{% elif jour == aujourdhui.day and mois == aujourdhui.month and annee == aujourdhui.year %}aujourdhui{% endif %}">
+                    {% if jour != 0 %}
+                    <span class="jour-num">{{ jour }}</span>
+                    {% for ev in par_jour.items %}
+                        {% if ev.0 == jour %}
+                            {% for e in ev.1 %}
+                            <a class="ev ev-{{ e.type }}" href="{% url 'planning:evenement_modifier' e.pk %}"
+                               title="{{ e.titre }} — {{ e.heure_debut|time:'H:i' }} à {{ e.heure_fin|time:'H:i' }} ({{ e.duree_heures }} h)">
+                               {{ e.heure_debut|time:'H:i' }} {{ e.titre|truncatechars:18 }}
+                            </a>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    <a href="{% url 'planning:evenement_creer' %}?date={{ annee }}-{{ mois|stringformat:'02d' }}-{{ jour|stringformat:'02d' }}" style="color:#a5b4fc; text-decoration:none;">+</a>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="carte">
+    <h2>⏳ Heures planifiées en {{ nom_mois }} {{ annee }}</h2>
+    <div class="stats">
+        <div class="stat"><div class="valeur">{{ heures.cours|floatformat:1 }} h</div><div class="label">📘 Cours</div></div>
+        <div class="stat"><div class="valeur" style="color:#059669;">{{ heures.revision|floatformat:1 }} h</div><div class="label">📖 Révision</div></div>
+        <div class="stat"><div class="valeur" style="color:#dc2626;">{{ heures.examen|floatformat:1 }} h</div><div class="label">📝 Examens</div></div>
+        <div class="stat"><div class="valeur">{{ heures_total|floatformat:1 }} h</div><div class="label">Σ Total</div></div>
+    </div>
+</div>
+<div class="carte">
+    <h2>🔔 Devoirs urgents</h2>
+    {% if nb_en_retard %}<p class="urgence">⚠️ {{ nb_en_retard }} devoir(s) en retard !</p>{% endif %}
+    {% if devoirs_urgents %}
+    <table>
+        <thead><tr><th>Devoir</th><th>Matière</th><th>Échéance</th><th>Statut</th></tr></thead>
+        <tbody>
+        {% for d in devoirs_urgents %}
+            <tr>
+                <td><strong>{{ d.titre }}</strong></td>
+                <td>{{ d.matiere|default:"—" }}</td>
+                <td>{{ d.date_echeance|date:"d/m/Y H:i" }}</td>
+                <td>{% if d.en_retard %}<span class="urgence">En retard</span>{% else %}<span class="badge">À rendre bientôt</span>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p style="margin-top:.8rem;"><a href="{% url 'planning:rappels' %}" class="btn btn-principal">✉️ Voir la page des rappels e-mail</a></p>
+    {% else %}
+    <p class="vide">Aucun devoir urgent. Tout est sous contrôle ! ✅</p>
+    {% endif %}
+</div>
+{% endblock %}

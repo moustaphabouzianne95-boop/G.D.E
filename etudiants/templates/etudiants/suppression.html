@@ -1,0 +1,20 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Supprimer {{ etudiant.prenom }} {{ etudiant.nom }}{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>⚠️ Confirmer la suppression</h2>
+    <p style="margin-bottom:1.2rem;">
+        Voulez-vous vraiment supprimer l'étudiant
+        <strong>{{ etudiant.prenom }} {{ etudiant.nom }}</strong>
+        ({{ etudiant.numero_etudiant }}) ?<br>
+        <em style="color:#dc2626;">Cette action est irréversible.</em>
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions-form">
+            <button type="submit" class="btn btn-danger">🗑️ Oui, supprimer</button>
+            <a href="{% url 'etudiants:detail' etudiant.pk %}" class="btn btn-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

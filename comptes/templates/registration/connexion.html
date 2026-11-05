@@ -1,0 +1,28 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Connexion{% endblock %}
+{% block contenu %}
+<div class="carte" style="max-width: 450px; margin: 2rem auto;">
+    <h2>🔐 Connexion</h2>
+    {% if form.non_field_errors %}
+    <div class="erreur" style="margin-bottom: 1rem;">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 1rem;">
+            <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+            {{ form.username }}
+        </div>
+        <div style="margin-bottom: 1.2rem;">
+            <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn btn-principal" style="width: 100%; padding: .7rem;">Se connecter</button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center; font-size: .9rem;">
+        Pas encore de compte ? <a href="{% url 'comptes:inscription' %}">S'inscrire</a>
+    </p>
+    <p style="margin-top: .4rem; text-align: center; font-size: .85rem; color: #64748b;">
+        Compte démo : <strong>demo / demo1234</strong>
+    </p>
+</div>
+{% endblock %}

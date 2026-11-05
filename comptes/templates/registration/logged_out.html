@@ -1,0 +1,9 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Déconnexion{% endblock %}
+{% block contenu %}
+<div class="carte" style="max-width: 450px; margin: 2rem auto; text-align: center;">
+    <h2>👋 Vous êtes déconnecté</h2>
+    <p style="margin: 1rem 0;">Merci de votre visite !</p>
+    <a href="{% url 'comptes:connexion' %}" class="btn btn-principal">Se reconnecter</a>
+</div>
+{% endblock %}

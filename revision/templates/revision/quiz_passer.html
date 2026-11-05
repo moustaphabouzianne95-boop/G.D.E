@@ -1,0 +1,56 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Passage : {{ quiz.titre }}{% endblock %}
+{% block style_extra %}
+.chrono { position: sticky; top: 0; float: right; background: #1e1b4b; color: #a5f3fc; font-family: monospace; font-size: 1.3rem; font-weight: 700; padding: .4rem 1rem; border-radius: 10px; }
+.question { margin-bottom: 1.4rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
+.choix { display: block; padding: .45rem .6rem; margin: .3rem 0; border-radius: 8px; cursor: pointer; }
+.choix:hover { background: #eef2ff; }
+.choix input { width: auto; margin-right: .5rem; }
+{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <div class="chrono" id="chrono">⏱️ 00:00</div>
+    <h2>▶️ {{ quiz.titre }}</h2>
+    <p class="resultats-info">{{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }} — le chronomètre tourne dès le chargement de la page.</p>
+    <form method="post" id="form-quiz">
+        {% csrf_token %}
+        <input type="hidden" name="duree_secondes" id="duree_secondes" value="0">
+        {% for question in quiz.questions.all %}
+        <div class="question">
+            <p style="font-weight: 600; margin-bottom: .5rem;">{{ forloop.counter }}. {{ question.enonce }}</p>
+            {% for choix in question.choix.all %}
+            <label class="choix">
+                <input type="radio" name="q_{{ question.id }}" value="{{ choix.id }}" required>
+                {{ choix.texte }}
+            </label>
+            {% endfor %}
+        </div>
+        {% empty %}
+        <p class="vide">Ce quiz ne contient aucune question pour le moment.</p>
+        {% endfor %}
+        <div class="actions-form">
+            <button type="submit" class="btn btn-principal">✅ Valider mes réponses</button>
+            <a href="{% url 'revision:quiz_detail' quiz.pk %}" class="btn btn-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+<script>
+(function () {
+    var debut = Date.now();
+    var affichage = document.getElementById('chrono');
+    var champDuree = document.getElementById('duree_secondes');
+    function tick() {
+        var ecoule = Math.floor((Date.now() - debut) / 1000);
+        var m = String(Math.floor(ecoule / 60)).padStart(2, '0');
+        var s = String(ecoule % 60).padStart(2, '0');
+        affichage.textContent = '⏱️ ' + m + ':' + s;
+        champDuree.value = ecoule;
+    }
+    tick();
+    setInterval(tick, 1000);
+    document.getElementById('form-quiz').addEventListener('submit', function () {
+        tick(); // fige la durée exacte au moment de la validation
+    });
+})();
+</script>
+{% endblock %}

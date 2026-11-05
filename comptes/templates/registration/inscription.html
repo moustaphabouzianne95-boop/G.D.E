@@ -1,0 +1,22 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Inscription{% endblock %}
+{% block contenu %}
+<div class="carte" style="max-width: 450px; margin: 2rem auto;">
+    <h2>📝 Créer un compte</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for champ in form %}
+        <div style="margin-bottom: 1rem;">
+            <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+            {{ champ }}
+            {% if champ.help_text %}<div style="font-size:.78rem; color:#64748b; margin-top:.25rem;">{{ champ.help_text }}</div>{% endif %}
+            {% for erreur in champ.errors %}<div class="erreur">{{ erreur }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-principal" style="width: 100%; padding: .7rem;">Créer mon compte</button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center; font-size: .9rem;">
+        Déjà un compte ? <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+    </p>
+</div>
+{% endblock %}

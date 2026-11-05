@@ -1,0 +1,76 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Liste des étudiants{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>🔍 Recherche multicritères</h2>
+    <form method="get" class="recherche">
+        <div>
+            <label for="id_mot_cle">{{ form_recherche.mot_cle.label }}</label>
+            {{ form_recherche.mot_cle }}
+        </div>
+        <div>
+            <label for="id_numero">{{ form_recherche.numero.label }}</label>
+            {{ form_recherche.numero }}
+        </div>
+        <div>
+            <label for="id_niveau">{{ form_recherche.niveau.label }}</label>
+            {{ form_recherche.niveau }}
+        </div>
+        <div>
+            <label for="id_inscrit_apres">{{ form_recherche.inscrit_apres.label }}</label>
+            {{ form_recherche.inscrit_apres }}
+        </div>
+        <div class="actions-form">
+            <button type="submit" class="btn btn-principal">Rechercher</button>
+            <a href="{% url 'etudiants:liste' %}" class="btn btn-secondaire">Réinitialiser</a>
+        </div>
+    </form>
+</div>
+
+<div class="carte">
+    <h2>📋 Étudiants inscrits</h2>
+    <p class="resultats-info">
+        {{ nb_resultats }} résultat{{ nb_resultats|pluralize }} —
+        <a href="{% url 'etudiants:creer' %}">+ Inscrire un étudiant</a> —
+        <a href="{% url 'etudiants:export_csv' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondaire btn-petit">📊 Exporter en CSV</a>
+    </p>
+    {% if etudiants %}
+    <table>
+        <thead>
+            <tr>
+                <th>Numéro</th><th>Nom</th><th>Prénom</th><th>E-mail</th><th>Niveau</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in etudiants %}
+            <tr>
+                <td>{{ e.numero_etudiant }}</td>
+                <td><a href="{% url 'etudiants:detail' e.pk %}"><strong>{{ e.nom }}</strong></a></td>
+                <td>{{ e.prenom }}</td>
+                <td>{{ e.email }}</td>
+                <td><span class="badge">{{ e.get_niveau_display }}</span></td>
+                <td>
+                    <a href="{% url 'etudiants:detail' e.pk %}" class="btn btn-secondaire btn-petit">Voir</a>
+                    <a href="{% url 'etudiants:modifier' e.pk %}" class="btn btn-principal btn-petit">Modifier</a>
+                    <a href="{% url 'etudiants:supprimer' e.pk %}" class="btn btn-danger btn-petit">Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">← Précédent</a>
+        {% endif %}
+        <span class="actif">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">Suivant →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p class="vide">Aucun étudiant ne correspond à votre recherche. 😕</p>
+    {% endif %}
+</div>
+{% endblock %}

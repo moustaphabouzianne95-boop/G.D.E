@@ -1,0 +1,33 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Mes scores{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>📊 Mes scores</h2>
+    {% if tentatives %}
+    <table>
+        <thead><tr><th>Quiz</th><th>Thématique</th><th>Score</th><th>Durée</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+        {% for t in tentatives %}
+            <tr>
+                <td><strong>{{ t.quiz.titre }}</strong></td>
+                <td><span class="badge">{{ t.quiz.thematique.nom }}</span></td>
+                <td><strong>{{ t.score }}/{{ t.nb_questions }}</strong> ({{ t.pourcentage }} %)</td>
+                <td>⏱️ {{ t.duree_formatee }}</td>
+                <td>{{ t.date|date:"d/m/Y H:i" }}</td>
+                <td><a href="{% url 'revision:resultat' t.pk %}" class="btn btn-secondaire btn-petit">Correction</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Précédent</a>{% endif %}
+        <span class="actif">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Suivant →</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p class="vide">Aucune tentative enregistrée. <a href="{% url 'revision:quiz_liste' %}">Passez un quiz</a> pour apparaître ici ! 🎯</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}Thématiques de révision{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>🏷️ Thématiques de révision</h2>
+    <p class="resultats-info"><a href="{% url 'revision:theme_creer' %}" class="btn btn-principal">+ Nouvelle thématique</a></p>
+    {% if thematiques %}
+    <table>
+        <thead><tr><th>Thématique</th><th>Description</th><th>Quiz</th><th>Flashcards</th><th></th></tr></thead>
+        <tbody>
+        {% for t in thematiques %}
+            <tr>
+                <td><strong>{{ t.nom }}</strong></td>
+                <td>{{ t.description|default:"—"|truncatewords:15 }}</td>
+                <td>{{ t.quiz.count }}</td>
+                <td>{{ t.flashcards.count }}</td>
+                <td><a href="{% url 'revision:theme_detail' t.pk %}" class="btn btn-secondaire btn-petit">Ouvrir</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vide">Aucune thématique pour le moment. Créez la première ! 🚀</p>
+    {% endif %}
+</div>
+{% endblock %}

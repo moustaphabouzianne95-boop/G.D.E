@@ -1,0 +1,26 @@
+{% extends "etudiants/base.html" %}
+{% block titre %}{% if object %}Modifier{% else %}Inscrire{% endif %} un étudiant{% endblock %}
+{% block contenu %}
+<div class="carte">
+    <h2>{% if object %}✏️ Modifier le profil de {{ object.prenom }} {{ object.nom }}{% else %}➕ Inscrire un nouvel étudiant{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            {% for champ in form %}
+            <div>
+                <label for="{{ champ.id_for_label }}">{{ champ.label }}</label>
+                {{ champ }}
+                {% for erreur in champ.errors %}<div class="erreur">{{ erreur }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% if form.non_field_errors %}
+        <div class="erreur" style="margin-top:.8rem;">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="actions-form">
+            <button type="submit" class="btn btn-principal">{% if object %}💾 Enregistrer les modifications{% else %}✅ Inscrire l'étudiant{% endif %}</button>
+            <a href="{% url 'etudiants:liste' %}" class="btn btn-secondaire">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
