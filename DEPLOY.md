@@ -1,6 +1,18 @@
 # Guide de deploiement sur Vercel
 
-Le projet est pret a etre deploye (fichiers prepares), mais le token Vercel connecte a cette conversation a une portee limitee (`limited: true`) : les appels `list_projects`, `list_deployments` et `create_deployment` sont refuses (Access denied). La validation des credentials reussit.
+## ✅ DEPLOYE — URL live
+**https://gd-q5sfnyf46-moustaphabouzianne95-boop.vercel.app**
+- Projet Vercel : `g.d.e` (prj_0aH8fWXk24N5zBCh1oeFPv2iYtKw), branche `main` du depot GitHub `moustaphabouzianne95-boop/G.D.E`
+- Deploiement : `dpl_2Mhxryid5gVKwEE3Jb9f1HNbfufy` (READY)
+- Env production : `VERCEL=1`, `DEBUG=False`, `SECRET_KEY` (encrypted) — deja configurees
+- Protection SSO Vercel desactivee (`ssoProtection: null`) pour un acces public
+- Comptes demo crees automatiquement au cold start : `demo` / `demo1234`
+
+## Fichiers prepares dans ce depot
+- `vercel.json` — build `@vercel/python`, routes vers `api/index.py`
+- `api/index.py` — entree WSGI (`app`) + bootstrap auto (migrations + comptes demo + donnees exemple dans `/tmp/db.sqlite3`)
+- `requirements.txt` — `Django==5.2.19` + `djangorestframework==3.18.3`
+- `gestion_etudiants/settings.py` — config pilotee par env : `SECRET_KEY`, `DEBUG`, `VERCEL=1` (SQLite dans `/tmp`, `DEBUG=False`, `*.vercel.app` dans `CSRF_TRUSTED_ORIGINS`)
 
 ## Fichiers deja prepares dans ce depot
 - `vercel.json` — build `@vercel/python`, toutes les routes vers `api/index.py`
